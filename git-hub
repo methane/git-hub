@@ -497,6 +497,7 @@ def pull_request(opts):
 
 @command
 def edit_subscription(opts):
+    """Remove unwanted subscriptions"""
     gh = github()
     repos = list(gh.iter_subscriptions())
     body = """
