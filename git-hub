@@ -66,6 +66,7 @@ Usage:
   git-hub clone [--ssh|--http] <repo>
   git-hub create [-d <description>]
   git-hub edit-hook <name> [<setting>...]
+  git-hub edit-subscription
   git-hub fork [--ssh|--http] <repo>
   git-hub forks
   git-hub gist [--desc <description>] <file>...
@@ -493,6 +494,34 @@ def pull_request(opts):
 
     pull = parent.create_pull(base=dst, head='%s:%s' % (repo.owner.login, src), title=title, body=body)
     print "Pull request %d created %s" % (pull.number, pull.html_url)
+
+@command
+def edit_subscription(opts):
+    gh = github()
+    repos = list(gh.iter_subscriptions())
+    body = """
+# Editing subscriptions.
+# Remove repository you wan't subscript anymore.
+"""
+    body += "\n".join(r.name for r in repos)
+    temp_file = os.path.join(check(shell.git('rev-parse', '--git-dir')).stdout.strip(), 'SUBSCRIBE_EDIT')
+    with open(temp_file, "w") as fd:
+        print >>fd, """# Remove repository you wan't to subscript."""
+        for r in repos:
+            print >>fd, r
+    getattr(shell, check(shell.git('var', 'GIT_EDITOR')).stdout.strip())(temp_file, redirect=False)
+    watches = set()
+    with open(temp_file) as fd:
+        for L in fd:
+            L = L.strip()
+            if not L or L.startswith('#'):
+                pass
+            watches.add(L)
+
+    for r in repos:
+        if str(r) not in watches:
+            print "Remove subscription:", r
+            r.set_subscription(False, False)
 
 @command
 def network(opts):
