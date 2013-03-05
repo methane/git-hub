@@ -1,4 +1,7 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 setup(name='hub',
     version="1.10",
@@ -6,6 +9,7 @@ setup(name='hub',
     author='Dennis Kaarsemaker',
     author_email='dennis@kaarsemaker.net',
     url='http://github.com/seveas/git-hub',
+    packages=['githubutil'],
     scripts=['git-hub'],
     classifiers=[
         "Intended Audience :: Developers",

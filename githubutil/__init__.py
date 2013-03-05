@@ -635,5 +635,3 @@ def browse(opts):
     """Open the GitHub page for this repo in a browser"""
     url = get_repo().html_url
     webbrowser.open_new(url)
-
-main()
